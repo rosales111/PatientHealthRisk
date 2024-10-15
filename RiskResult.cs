@@ -1,5 +1,5 @@
 public class RiskResult
 {
-    public string ID { get; set; }
-    public string RiskStatus { get; set; }
+    public string ID { get; set; } = string.Empty;  // Initialize to avoid warnings
+    public string RiskStatus { get; set; } = string.Empty;
 }

@@ -14,7 +14,7 @@ public static class HealthRiskCalculator
         if (patient.SystolicBP >= 180 || patient.DiastolicBP >= 120) points += 15;
         else if (patient.SystolicBP >= 140 || patient.DiastolicBP >= 90) points += 11;
         else if (patient.SystolicBP >= 130 || patient.DiastolicBP >= 80) points += 7;
-        else if (patient.SystolicBP >= 120) points += 5;
+        else if (patient.SystolicBP >= 120 && patient.DiastolicBP < 80) points += 5;
 
         // Serum Creatinine
         if (patient.SerumCreatinine >= 6.0) points += 15;
@@ -38,7 +38,7 @@ public static class HealthRiskCalculator
         // Sodium
         if (patient.Sodium > 145) points += 8;
         else if (patient.Sodium < 125) points += 10;
-        else if (patient.Sodium < 130) points += 6;
+        else if (patient.Sodium < 130 && patient.Sodium >= 125) points += 6;
 
         // Age
         if (patient.Age >= 76) points += 10;
@@ -47,7 +47,7 @@ public static class HealthRiskCalculator
         else if (patient.Age >= 18) points += 1;
 
         // Dialysis Adherence
-        points += patient.DialysisAdherence;
+        if (!patient.DialysisAdherence) points += 10;  // Penalize if not adherent
 
         // Medications (points based on medications)
         foreach (var med in patient.Medications)
