@@ -1,6 +1,6 @@
 public class Patient
 {
-    public string Id { get; set; } = string.Empty;  // Patient identifier
+    public string PatientId { get; set; } = string.Empty;  // Patient identifier
     public DateTime BirthDate { get; set; }         // To calculate age
     public double HealthcareExpenses { get; set; }  // Healthcare-related financials
     public double HealthcareCoverage { get; set; }  // Insurance coverage

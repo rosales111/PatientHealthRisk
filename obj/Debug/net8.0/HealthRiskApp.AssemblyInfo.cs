@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HealthRiskApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4397b3a5630c6b527df6c7106d3ad75efc743cce")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d67189d1c3e83d19cf9df06a2663c7dfd1ca15")]
 [assembly: System.Reflection.AssemblyProductAttribute("HealthRiskApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HealthRiskApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
