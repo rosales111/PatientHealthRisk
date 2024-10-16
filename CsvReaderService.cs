@@ -33,7 +33,7 @@ public class CsvReaderService
             {
                 var patient = new Patient
                 {
-                    Id = worksheet.Cells[row, 2].Text,  // Assuming Patient ID is in column 2
+                    PatientId = worksheet.Cells[row, 2].Text,  // Assuming Patient ID is in column 2
                     BMI = double.TryParse(worksheet.Cells[row, 3].Text, out var bmi) ? bmi : 0,  // Assuming BMI is in column 3
                     SystolicBP = double.TryParse(worksheet.Cells[row, 4].Text, out var systolicBP) ? systolicBP : 0,  // Assuming Systolic BP is in column 4
                     DiastolicBP = double.TryParse(worksheet.Cells[row, 5].Text, out var diastolicBP) ? diastolicBP : 0,  // Assuming Diastolic BP is in column 5
@@ -44,7 +44,7 @@ public class CsvReaderService
                 };
 
                 // Debugging: Output patient details
-                Console.WriteLine($"Read Patient ID: {patient.Id}, BMI: {patient.BMI}, SystolicBP: {patient.SystolicBP}, DiastolicBP: {patient.DiastolicBP}");
+                Console.WriteLine($"Read Patient ID: {patient.PatientId}, BMI: {patient.BMI}, SystolicBP: {patient.SystolicBP}, DiastolicBP: {patient.DiastolicBP}");
 
                 patients.Add(patient);
             }
@@ -71,13 +71,15 @@ public class CsvReaderService
                 {
                     PatientId = worksheet.Cells[row, 2].Text,  // Assuming Patient ID is in column 2
                     Code = worksheet.Cells[row, 5].Text,  // Assuming Observation Code is in column 5
-                    Value = double.TryParse(worksheet.Cells[row, 6].Text, out var value) ? value : 0,  // Assuming Value is in column 6
+                    Value = double.TryParse(worksheet.Cells[row, 7].Text, out var value) ? value : 0,  // Assuming Value is in column 6
                     Date = DateTime.TryParse(worksheet.Cells[row, 1].Text, out var date) ? date : DateTime.MinValue  // Assuming Date is in column 1
                 };
 
                 observations.Add(observation);
             }
         }
+        Console.WriteLine($"Loaded {observations.Count} observations from the Excel file.");
+
 
         return observations;
     }
@@ -89,21 +91,44 @@ public class CsvReaderService
         // Filter observations by patient ID
         var patientObservations = allObservations.Where(o => o.PatientId == patientId).ToList();
 
-        // Get the latest BMI, SystolicBP, DiastolicBP
-        var latestBMI = patientObservations.Where(o => o.Code == "39156-5")
+        // Observation codes for BMI, Blood Pressure, GFR, etc.
+        var bmiCode = "39156-5";
+        var systolicBpCode = "8480-6";
+        var diastolicBpCode = "8462-4";
+        var gfrCode = "33914-3";
+        var potassiumCode = "6298-4";
+        var sodiumCode = "2947-0";
+
+        // Get the latest observations based on code
+        var latestBMI = patientObservations.Where(o => o.Code == bmiCode)
                                            .OrderByDescending(o => o.Date)
                                            .FirstOrDefault();
-        var latestSystolicBP = patientObservations.Where(o => o.Code == "8480-6")
+        var latestSystolicBP = patientObservations.Where(o => o.Code == systolicBpCode)
                                                   .OrderByDescending(o => o.Date)
                                                   .FirstOrDefault();
-        var latestDiastolicBP = patientObservations.Where(o => o.Code == "8462-4")
+        var latestDiastolicBP = patientObservations.Where(o => o.Code == diastolicBpCode)
                                                    .OrderByDescending(o => o.Date)
                                                    .FirstOrDefault();
+        var latestGFR = patientObservations.Where(o => o.Code == gfrCode)
+                                           .OrderByDescending(o => o.Date)
+                                           .FirstOrDefault();
+        var latestPotassium = patientObservations.Where(o => o.Code == potassiumCode)
+                                                 .OrderByDescending(o => o.Date)
+                                                 .FirstOrDefault();
+        var latestSodium = patientObservations.Where(o => o.Code == sodiumCode)
+                                              .OrderByDescending(o => o.Date)
+                                              .FirstOrDefault();
 
-        // Add to observations dictionary (default to 0 if not found)
+        // Add observations to the dictionary (default to 0 if not found)
         observations["BMI"] = latestBMI != null ? latestBMI.Value : 0;
         observations["SystolicBP"] = latestSystolicBP != null ? latestSystolicBP.Value : 0;
         observations["DiastolicBP"] = latestDiastolicBP != null ? latestDiastolicBP.Value : 0;
+        observations["GFR"] = latestGFR != null ? latestGFR.Value : 0;
+        observations["Potassium"] = latestPotassium != null ? latestPotassium.Value : 0;
+        observations["Sodium"] = latestSodium != null ? latestSodium.Value : 0;
+
+        // Debugging: Output the values for each observation
+        Console.WriteLine($"Latest BMI: {observations["BMI"]}, SystolicBP: {observations["SystolicBP"]}, DiastolicBP: {observations["DiastolicBP"]}, GFR: {observations["GFR"]}, Potassium: {observations["Potassium"]}, Sodium: {observations["Sodium"]}");
 
         return observations;
     }

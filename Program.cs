@@ -21,25 +21,25 @@ public class Program
             var excelReaderService = new CsvReaderService();
             List<Patient> patients = excelReaderService.ReadPatientsFromExcel(excelFilePath);
 
-            // Read all observations from the Excel file (create a method to read observations if not already present)
-            List<Observation> observationsList = excelReaderService.ReadObservationsFromExcel(excelFilePath); // Implement this method to read observation data
+            // Read all observations from the Excel file (make sure you have a method to read observations)
+            List<Observation> observationsList = excelReaderService.ReadObservationsFromExcel(excelFilePath);  
 
             // Evaluate risk and output results
             List<RiskResult> results = new List<RiskResult>();
             foreach (var patient in patients)
             {
                 // Debugging: Output the patient ID and check if it exists
-                if (string.IsNullOrEmpty(patient.Id))
+                if (string.IsNullOrEmpty(patient.PatientId))
                 {
                     Console.WriteLine("Warning: Patient ID is missing.");
                 }
                 else
                 {
-                    Console.WriteLine($"Processing Patient ID: {patient.Id}");
+                    Console.WriteLine($"Processing Patient ID: {patient.PatientId}");
                 }
 
                 // Fetch the latest observations for the patient
-                var latestObservations = CsvReaderService.GetLatestObservations(patient.Id, observationsList);
+                var latestObservations = CsvReaderService.GetLatestObservations(patient.PatientId, observationsList);
 
                 // Debugging: Output the latest observation values
                 Console.WriteLine($"BMI: {latestObservations["BMI"]}, SystolicBP: {latestObservations["SystolicBP"]}, DiastolicBP: {latestObservations["DiastolicBP"]}");
@@ -49,10 +49,10 @@ public class Program
                 string risk = score >= 85 ? "At Risk" : "Not At Risk";
 
                 // Debugging: Output risk score and risk status
-                Console.WriteLine($"Patient ID: {patient.Id}, Risk Score: {score}, Risk Status: {risk}");
+                Console.WriteLine($"Patient ID: {patient.PatientId}, Risk Score: {score}, Risk Status: {risk}");
 
                 // Add the result to the list
-                results.Add(new RiskResult { ID = patient.Id, RiskStatus = risk });
+                results.Add(new RiskResult { ID = patient.PatientId, RiskStatus = risk });
             }
 
             // Write results to a new CSV file in the same directory
