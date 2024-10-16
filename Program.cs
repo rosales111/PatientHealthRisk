@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using CsvHelper;
 using OfficeOpenXml;
+using PatientHealthRisk;
 
 public class Program
 {
@@ -17,8 +18,11 @@ public class Program
             string excelFilePath = Path.Combine(baseDirectory, "CsvFiles", "MockPatientDataRevised1-2.xlsx");
 
             // Instantiate the service to read patients from Excel file
-            var excelReaderService = new CsvReaderService();  // You can rename to ExcelReaderService if preferred
+            var excelReaderService = new CsvReaderService();
             List<Patient> patients = excelReaderService.ReadPatientsFromExcel(excelFilePath);
+
+            // Read all observations from the Excel file (create a method to read observations if not already present)
+            List<Observation> observationsList = excelReaderService.ReadObservationsFromExcel(excelFilePath); // Implement this method to read observation data
 
             // Evaluate risk and output results
             List<RiskResult> results = new List<RiskResult>();
@@ -34,23 +38,14 @@ public class Program
                     Console.WriteLine($"Processing Patient ID: {patient.Id}");
                 }
 
-                // Create observations dictionary for each patient
-                var observations = new Dictionary<string, double>
-                {
-                    { "BMI", patient.BMI },
-                    { "SystolicBP", patient.SystolicBP },
-                    { "DiastolicBP", patient.DiastolicBP },
-                    { "SerumCreatinine", patient.SerumCreatinine },
-                    { "GFR", patient.GFR },
-                    { "Potassium", patient.Potassium },
-                    { "Sodium", patient.Sodium }
-                };
+                // Fetch the latest observations for the patient
+                var latestObservations = CsvReaderService.GetLatestObservations(patient.Id, observationsList);
 
-                // Debugging: Output observation values
-                Console.WriteLine($"BMI: {patient.BMI}, SystolicBP: {patient.SystolicBP}, DiastolicBP: {patient.DiastolicBP}");
+                // Debugging: Output the latest observation values
+                Console.WriteLine($"BMI: {latestObservations["BMI"]}, SystolicBP: {latestObservations["SystolicBP"]}, DiastolicBP: {latestObservations["DiastolicBP"]}");
 
-                // Calculate risk score
-                int score = HealthRiskCalculator.CalculateRiskPoints(patient, observations);
+                // Calculate risk score using the latest observations
+                int score = HealthRiskCalculator.CalculateRiskPoints(patient, latestObservations);
                 string risk = score >= 85 ? "At Risk" : "Not At Risk";
 
                 // Debugging: Output risk score and risk status

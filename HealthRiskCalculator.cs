@@ -13,6 +13,9 @@ public static class HealthRiskCalculator
         double potassium = observations.ContainsKey("Potassium") ? observations["Potassium"] : 0;
         double sodium = observations.ContainsKey("Sodium") ? observations["Sodium"] : 0;
 
+        Console.WriteLine($"Patient ID: {patient.Id}, BMI: {bmi}, SystolicBP: {systolicBP}, DiastolicBP: {diastolicBP}, GFR: {gfr}, Potassium: {potassium}, Sodium: {sodium}, Age: {patient.Age}, DialysisSessions: {patient.DialysisSessions}");
+
+
         // BMI Logic
         if (bmi < 18.5) points += 10;  // Underweight
         else if (bmi >= 25 && bmi <= 29.9) points += 4;  // Overweight
