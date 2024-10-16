@@ -32,7 +32,7 @@ public class CsvReaderService
             {
                 var patient = new Patient
                 {
-                    Id = worksheet.Cells[row, 1].Text,  // Assuming Patient ID is in column 1
+                    Id = worksheet.Cells[row, 2].Text,  // Assuming Patient ID is in column 1
                     BMI = double.TryParse(worksheet.Cells[row, 2].Text, out var bmi) ? bmi : 0,
                     SystolicBP = double.TryParse(worksheet.Cells[row, 3].Text, out var systolicBP) ? systolicBP : 0,
                     DiastolicBP = double.TryParse(worksheet.Cells[row, 4].Text, out var diastolicBP) ? diastolicBP : 0,
