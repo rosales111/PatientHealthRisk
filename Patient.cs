@@ -1,21 +1,36 @@
 public class Patient
 {
-    public string Id { get; set; } = string.Empty;  // Initialize to avoid warnings
-    public DateTime BirthDate { get; set; }
-    public double HealthcareExpenses { get; set; }
-    public double HealthcareCoverage { get; set; }
+    public string Id { get; set; } = string.Empty;  // Patient identifier
+    public DateTime BirthDate { get; set; }         // To calculate age
+    public double HealthcareExpenses { get; set; }  // Healthcare-related financials
+    public double HealthcareCoverage { get; set; }  // Insurance coverage
+    
+    // Medical Measurements
+    public double BMI { get; set; }                 // Body Mass Index
+    public double SystolicBP { get; set; }          // Systolic Blood Pressure
+    public double DiastolicBP { get; set; }         // Diastolic Blood Pressure
+    public double SerumCreatinine { get; set; }     // Serum Creatinine
+    public double GFR { get; set; }                 // Glomerular Filtration Rate
+    public double Potassium { get; set; }           // Potassium levels
+    public double Sodium { get; set; }              // Sodium levels
+    
+    // Track Dialysis Sessions
+    public int DialysisSessions { get; set; }       // Number of dialysis sessions
 
-    // Properties required for HealthRiskCalculator
-    public double BMI { get; set; }
-    public double SystolicBP { get; set; }
-    public double DiastolicBP { get; set; }
-    public double SerumCreatinine { get; set; }
-    public double GFR { get; set; }
-    public double Potassium { get; set; }
-    public double Sodium { get; set; }
-    public int Age { get; set; } // Could be calculated from BirthDate if needed
-    public bool DialysisAdherence { get; set; }
+    // List of medications
     public List<string> Medications { get; set; } = new List<string>();
 
-    // Constructor and other methods (if any) can be added here
+    // Calculate age dynamically
+    public int Age 
+    {
+        get 
+        {
+            int age = DateTime.Now.Year - BirthDate.Year;
+            if (DateTime.Now.DayOfYear < BirthDate.DayOfYear)  // Check if birthday has passed this year
+            {
+                age--;
+            }
+            return age;
+        }
+    }
 }

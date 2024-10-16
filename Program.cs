@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using CsvHelper;
+using OfficeOpenXml;
 
 public class Program
 {
@@ -12,28 +13,50 @@ public class Program
             // Get the base directory where the program is running from
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            // Combine it with the relative path to the CSV folder
-            string folderPath = Path.Combine(baseDirectory, "CsvFiles", "synthea_sample_data_csv_apr2020", "csv");
+            // Path to the Excel file (replace CsvFiles path with the actual Excel file path)
+            string excelFilePath = Path.Combine(baseDirectory, "CsvFiles", "MockPatientDataRevised1-2.xlsx");
 
-            // Check if patients.csv exists in the specified folder
-            string patientsFilePath = Path.Combine(folderPath, "patients.csv");
-            if (!File.Exists(patientsFilePath))
-            {
-                Console.WriteLine("Error: patients.csv file not found in the specified folder.");
-                return;
-            }
-
-            // Instantiate CsvReaderService and read patients from CSV files
-            var csvReaderService = new CsvReaderService();
-            List<Patient> patients = csvReaderService.ReadPatientsFromCsv(folderPath);
+            // Instantiate the service to read patients from Excel file
+            var excelReaderService = new CsvReaderService();  // You can rename to ExcelReaderService if preferred
+            List<Patient> patients = excelReaderService.ReadPatientsFromExcel(excelFilePath);
 
             // Evaluate risk and output results
             List<RiskResult> results = new List<RiskResult>();
             foreach (var patient in patients)
             {
-                int score = HealthRiskCalculator.CalculateRiskPoints(patient);
+                // Debugging: Output the patient ID and check if it exists
+                if (string.IsNullOrEmpty(patient.Id))
+                {
+                    Console.WriteLine("Warning: Patient ID is missing.");
+                }
+                else
+                {
+                    Console.WriteLine($"Processing Patient ID: {patient.Id}");
+                }
+
+                // Create observations dictionary for each patient
+                var observations = new Dictionary<string, double>
+                {
+                    { "BMI", patient.BMI },
+                    { "SystolicBP", patient.SystolicBP },
+                    { "DiastolicBP", patient.DiastolicBP },
+                    { "SerumCreatinine", patient.SerumCreatinine },
+                    { "GFR", patient.GFR },
+                    { "Potassium", patient.Potassium },
+                    { "Sodium", patient.Sodium }
+                };
+
+                // Debugging: Output observation values
+                Console.WriteLine($"BMI: {patient.BMI}, SystolicBP: {patient.SystolicBP}, DiastolicBP: {patient.DiastolicBP}");
+
+                // Calculate risk score
+                int score = HealthRiskCalculator.CalculateRiskPoints(patient, observations);
                 string risk = score >= 85 ? "At Risk" : "Not At Risk";
 
+                // Debugging: Output risk score and risk status
+                Console.WriteLine($"Patient ID: {patient.Id}, Risk Score: {score}, Risk Status: {risk}");
+
+                // Add the result to the list
                 results.Add(new RiskResult { ID = patient.Id, RiskStatus = risk });
             }
 
